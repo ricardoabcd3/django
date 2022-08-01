@@ -1,16 +1,17 @@
-from lib2to3.pgen2 import driver
-import unittest
+# this is not executable file , is a complement of Smoke_tests.py
+
+
+
+import	unittest
 from selenium import webdriver
-#sirve como excepción para los assertions cuando queremos
-#validar la presencia de un elemento
 from selenium.common.exceptions import NoSuchElementException
-#ayuda a llamar a las excepciones que queremos validar
 from selenium.webdriver.common.by import By
+from pyunitreport import HTMLTestRunner
 
 class AssertionsTest(unittest.TestCase):
 
 	def setUp(self):
-		self.driver = webdriver.Chrome(executable_path = r"C:\Users\ricki\OneDrive\Escritorio\django\django\msedgedriver.exe")
+		self.driver = webdriver.Edge(executable_path = r"C:\Users\ricki\OneDrive\Escritorio\django\django\msedgedriver.exe")
 		driver = self.driver
 		driver.implicitly_wait(30)
 		driver.maximize_window()
@@ -34,3 +35,4 @@ class AssertionsTest(unittest.TestCase):
 		except NoSuchElementException as variable:
 			return False
 		return True
+
