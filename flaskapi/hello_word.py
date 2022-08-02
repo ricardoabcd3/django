@@ -1,9 +1,11 @@
 #python
+from turtle import st
 from typing import Optional
+from unittest.util import _MAX_LENGTH
 #pydantic
 from pydantic import BaseModel
 #fast api
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi import Body
 
 app = FastAPI()
@@ -22,4 +24,10 @@ def home():
 @app.post("/person/new")
 def create_person(person: Person=Body(...)):
 	
-	return person	
+	return person
+#validations : query parameters
+	
+@app.get('/person/detail')
+def show_person(name: Optional[str]= Query(None, min_length=1,max_length=50),
+				age: Optional[str]=Query(None,min_length=0,max_length=3) ):
+				return{name*2:age*2}
