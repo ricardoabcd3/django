@@ -1,11 +1,11 @@
 #python
-from turtle import st
+
 from typing import Optional
-from unittest.util import _MAX_LENGTH
+
 #pydantic
 from pydantic import BaseModel
 #fast api
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Path, Query
 from fastapi import Body
 
 app = FastAPI()
@@ -28,6 +28,21 @@ def create_person(person: Person=Body(...)):
 #validations : query parameters
 	
 @app.get('/person/detail')
-def show_person(name: Optional[str]= Query(None, min_length=1,max_length=50),
-				age: Optional[str]=Query(None,min_length=0,max_length=3) ):
+def show_person(name: Optional[str]= Query(None,
+	 min_length=1,max_length=50,
+	title='Person Name',
+	description="this is the person name. it's between 1 and 50 characters"),
+	age: str=Query(...,		
+		min_length=0,
+		max_length=3,
+		title='Person age',description='this is person age, it is bewteen 0 to 999') ):
 				return{name*2:age*2}
+#validaciones : Path parameters
+@app.get("/person/deatil/{person_id}")
+def  show_person(
+	person_id: int = Path(...,
+	gt=0,
+	title='Person id'
+	,description='this is the  uniqui person id ')
+):
+	return{person_id:'it exists¡'}
