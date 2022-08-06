@@ -10,6 +10,11 @@ from fastapi import Body
 
 app = FastAPI()
 #models 
+class Location(BaseModel):
+	city:str
+	state:str
+	zip:int
+
 class Person(BaseModel):
 	first_name :str
 	last_name :str
@@ -46,3 +51,14 @@ def  show_person(
 	,description='this is the  uniqui person id ')
 ):
 	return{person_id:'it exists¡'}
+#validaciones : request body
+@app.put("/person/{person_id}")
+def update_person(
+	person_id: int =Path(
+		...,title="Person id",description="this is the person id",gt=0
+),person: Person=Body(...),
+Location: Location=Body(...)):
+	output= person.dict()
+	output.update(Location.dict())
+
+	return output
