@@ -1,10 +1,11 @@
 #python
+
 from enum import Enum
 from typing import Optional
 
 #pydantic
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import AnyUrl, BaseModel, EmailStr, FilePath
+from pydantic import Field, DirectoryPath
 #fast api
 from fastapi import FastAPI, Path, Query
 from fastapi import Body
@@ -19,9 +20,20 @@ class Hair_color(Enum):
 	blonde: str= "white"
 
 class Location(BaseModel):
-	city:str
-	state:str
-	zip:int
+	#set 26 letters beacuse the longest name plece belong Mamungkukumpurangkuntjunya Hill, Australia which has 26 letters
+	city:str= Field(...,max_length=26,min_length=1,)
+	state:str=Field(...,max_length=26,min_length=1,)
+	zip:int=Field(...,gt=1,le=1000,)
+	class Config:
+		schema_extra={
+			"example":
+			{"city": "cdmx",
+			"state":"mexico",
+			"zip":"55214"
+
+			}
+
+		}
 
 class Person(BaseModel):
 	first_name :str = Field(...,
@@ -31,10 +43,36 @@ class Person(BaseModel):
 	age :int =Field(...,gt=1,le=120)
 	hair_color: Optional[Hair_color]=Field(default=None)
 	is_married: Optional[bool]=Field(default=None)
+	email:Optional[EmailStr]=Field(default=None)
+	file_path:Optional[FilePath]=Field(default=None)
+	anyurl:Optional[AnyUrl]=Field(default=None)
+
+class Person1(BaseModel):
+	first_name :str = Field(...,
+	min_length=1,max_length=50,)
+	last_name :str= Field(...,
+	min_length=1,max_length=50,)
+	age :int =Field(...,gt=1,le=120)
+	hair_color: Optional[Hair_color]=Field(default=None)
+	is_married: Optional[bool]=Field(default=None)
+	class Config:
+		#schema_extra* required
+		schema_extra ={
+			#example* required
+			"example":{
+				"first_name": "Facundo",
+				"last_name": "lopez perez",
+				"age": 21,
+				"hair_color":"blonde",
+				"is_married":False			
+			}
+		}
+
+
 
 @app.get('/')
 def home():
-	return (1)
+	return ("welcome to my proyect")
 #request and response body
 @app.post("/person/new")
 def create_person(person: Person=Body(...)):
@@ -66,9 +104,13 @@ def  show_person(
 def update_person(
 	person_id: int =Path(
 		...,title="Person id",description="this is the person id",gt=0
-),person: Person=Body(...),
+),person: Person1=Body(...),
 Location: Location=Body(...)):
 	output= person.dict()
 	output.update(Location.dict())
 
 	return output
+@app.put('/person/account/')
+def sing_in(person: Person1=Body(...)):
+	return person
+
