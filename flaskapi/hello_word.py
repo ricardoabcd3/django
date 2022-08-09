@@ -84,11 +84,11 @@ def create_person(person: Person=Body(...)):
 def show_person(name: Optional[str]= Query(None,
 	 min_length=1,max_length=50,
 	title='Person Name',
-	description="this is the person name. it's between 1 and 50 characters"),
+	description="this is the person name. it's between 1 and 50 characters",example="ricardo"),
 	age: str=Query(...,		
 		min_length=0,
 		max_length=3,
-		title='Person age',description='this is person age, it is bewteen 0 to 999') ):
+		title='Person age',description='this is person age, it is bewteen 0 to 999',example="21") ):
 				return{name*2:age*2}
 #validaciones : Path parameters
 @app.get("/person/deatil/{person_id}")
@@ -96,15 +96,15 @@ def  show_person(
 	person_id: int = Path(...,
 	gt=0,
 	title='Person id'
-	,description='this is the  uniqui person id ')
+	,description='this is the  uniqui person id ',example="1")
 ):
 	return{person_id:'it exists¡'}
 #validaciones : request body
 @app.put("/person/{person_id}")
 def update_person(
 	person_id: int =Path(
-		...,title="Person id",description="this is the person id",gt=0
-),person: Person1=Body(...),
+		...,title="Person id",description="this is the person id",gt=0,example="1"
+		),person: Person1=Body(...),
 Location: Location=Body(...)):
 	output= person.dict()
 	output.update(Location.dict())
