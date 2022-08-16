@@ -47,7 +47,7 @@ class Person(BaseModel):
 	file_path:Optional[FilePath]=Field(default=None)
 	any_url:Optional[AnyUrl]=Field(default=None)
 
-class Person1(BaseModel):
+class Personbase(BaseModel):
 	first_name :str = Field(...,
 	min_length=1,max_length=50,)
 	last_name :str= Field(...,
@@ -55,7 +55,7 @@ class Person1(BaseModel):
 	age :int =Field(...,gt=1,le=120)
 	hair_color: Optional[Hair_color]=Field(default=None)
 	is_married: Optional[bool]=Field(default=None)
-	password:str=Field(...,min_length=8,)
+	
 	class Config:
 		#schema_extra* required
 		schema_extra ={
@@ -69,30 +69,15 @@ class Person1(BaseModel):
 				"password":"password123"			
 			}
 		}
-class Person_out(BaseModel):
-	first_name :str = Field(...,
-	min_length=1,max_length=50,)
-	last_name :str= Field(...,
-	min_length=1,max_length=50,)
-	age :int =Field(...,gt=1,le=120)
-	hair_color: Optional[Hair_color]=Field(default=None)
-	is_married: Optional[bool]=Field(default=None)
+class Person1(Personbase):
+	password:str=Field(...,min_length=8,)
 	
-	class Config:
-		#schema_extra* required
-		schema_extra ={
-			#example* required
-			"example":{
-				"first_name": "Facundo",
-				"last_name": "lopez perez",
-				"age": 21,
-				"hair_color":"blonde",
-				"is_married":False,
-						
-			}
-		}
+class Person_out(Personbase):
+	pass
 
-Person_out
+	
+
+
 
 
 @app.get('/')
@@ -100,15 +85,15 @@ def home():
 	return ("welcome to my proyect")
 #request and response body
 #exclude responses with model_exclude
-'''@app.post("/person/new",response_model=Person1,response_model_exclude={'password'})
-def create_person(person: Person1=Body(...)):
-	
-	return person'''
-#exclude response with responses model
-@app.post("/person/new",response_model=Person_out)
+@app.post("/person/new",response_model=Person1,response_model_exclude={'password'})
 def create_person(person: Person1=Body(...)):
 	
 	return person
+#exclude response with responses model (no valid way when you can use response model_exclude)
+'''@app.post("/person/new",response_model=Person_out)
+def create_person(person: Person1=Body(...)):
+	
+	return person'''
 #validations : query parameters
 	
 @app.get('/person/detail')
