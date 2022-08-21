@@ -1,16 +1,23 @@
 #python
+
+from email import message
 from enum import Enum
+from tkinter.tix import Form
 from typing import Optional
 
 #pydantic
 from pydantic import AnyUrl, BaseModel, EmailStr, FilePath
 from pydantic import Field, DirectoryPath
 #fast api
-from fastapi import FastAPI, Path, Query
+from fastapi import FastAPI, Path, Query,Form
 from fastapi import Body
+from fastapi import status
 
 app = FastAPI()
 #models 
+class LoginOut(BaseModel):
+	usename:str =Field(...,max_length=20,min_length=3,example='user123')
+	message:str =Field(default='Loging Succesfully')
 
 class Hair_color(Enum):
 	white: str= "white"
@@ -20,7 +27,8 @@ class Hair_color(Enum):
 
 
 class Location(BaseModel):
-	#set 26 letters beacuse the longest name plece belong Mamungkukumpurangkuntjunya Hill, Australia which has 26 letters
+#set 26 letters beacuse the longest name plece belong Mamungkukumpurangkuntjunya Hill,Australia
+#  which has 26 letters
 	city:str= Field(...,max_length=26,min_length=1,)
 	state:str=Field(...,max_length=26,min_length=1,)
 	zip:int=Field(...,gt=1,le=1000,)
@@ -80,12 +88,13 @@ class Person_out(Personbase):
 
 
 
-@app.get('/')
+@app.get('/', status_code=status.HTTP_200_OK)
 def home():
 	return ("welcome to my proyect")
 #request and response body
 #exclude responses with model_exclude
-@app.post("/person/new",response_model=Person1,response_model_exclude={'password'})
+@app.post("/person/new",response_model=Person1,response_model_exclude={'password'}
+, status_code=status.HTTP_201_CREATED)
 def create_person(person: Person1=Body(...)):
 	
 	return person
@@ -96,7 +105,7 @@ def create_person(person: Person1=Body(...)):
 	return person'''
 #validations : query parameters
 	
-@app.get('/person/detail')
+@app.get('/person/detail', status_code=status.HTTP_200_OK)
 def show_person(name: Optional[str]= Query(None,
 	 min_length=1,max_length=50,
 	title='Person Name',
@@ -107,7 +116,7 @@ def show_person(name: Optional[str]= Query(None,
 		title='Person age',description='this is person age, it is bewteen 0 to 999',example="21") ):
 				return{name*2:age*2}
 #validaciones : Path parameters
-@app.get("/person/deatil/{person_id}")
+@app.get("/person/deatil/{person_id}", status_code=status.HTTP_200_OK)
 def  show_person(
 	person_id: int = Path(...,
 	gt=0,
@@ -116,7 +125,7 @@ def  show_person(
 ):
 	return{person_id:'it exists¡'}
 #validaciones : request body
-@app.put("/person/{person_id}")
+@app.put("/person/{person_id}", status_code=status.HTTP_202_ACCEPTED)
 def update_person(
 	person_id: int =Path(
 		...,title="Person id",description="this is the person id",gt=0,example="1"
@@ -126,7 +135,15 @@ Location: Location=Body(...)):
 	output.update(Location.dict())
 
 	return output
-@app.put('/person/account/')
+@app.put('/person/account/', status_code=status.HTTP_200_OK)
 def sing_in(person: Person1=Body(...)):
 	return person
-
+#forms in fastapi
+@app.post(
+    path="/login",
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK
+) 
+def login(usename:str =Form(...),password:str =Form(...),):
+	return LoginOut(usename=usename)
+	
