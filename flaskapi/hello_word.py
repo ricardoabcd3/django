@@ -1,6 +1,5 @@
 #python
 
-from email import message
 from enum import Enum
 from tkinter.tix import Form
 from typing import Optional
@@ -9,7 +8,7 @@ from typing import Optional
 from pydantic import AnyUrl, BaseModel, EmailStr, FilePath
 from pydantic import Field, DirectoryPath
 #fast api
-from fastapi import FastAPI, Path, Query,Form
+from fastapi import FastAPI, Path, Query,Form, Header,Cookie
 from fastapi import Body
 from fastapi import status
 
@@ -31,7 +30,7 @@ class Location(BaseModel):
 #  which has 26 letters
 	city:str= Field(...,max_length=26,min_length=1,)
 	state:str=Field(...,max_length=26,min_length=1,)
-	zip:int=Field(...,gt=1,le=1000,)
+	zip:int=Field(...,gt=1,le=10000,)
 	class Config:
 		schema_extra={
 			"example":
@@ -146,4 +145,17 @@ def sing_in(person: Person1=Body(...)):
 ) 
 def login(usename:str =Form(...),password:str =Form(...),):
 	return LoginOut(usename=usename)
+#cookies and headers
+@app.post(
+	path="/contact",status_code=status.HTTP_200_OK)
+def contact(
+	first_name:str =Form(...,min_length=1,max_length=50),
+	last_name:str =Form(...,min_length=1,max_length=50),
+	email:EmailStr=Form(...),
+	message:str =Form(...,min_length=20,max_length=50),
+	user_agent: Optional[str]=Header(default=None),
+	ads:Optional[str]=Cookie(default=None)
+
+):
+	return user_agent
 	
