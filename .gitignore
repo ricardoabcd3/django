@@ -1,7 +1,2 @@
-/.ssh
-new/
-msedgedriver.exe
-chromedriver.exe
-/selenium/selenium
-/selenium/reports
-/selenium/__pycache__
+django/
+selenium/
