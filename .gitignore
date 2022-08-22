@@ -1,2 +1,5 @@
-flaskapi/
-selenium/
+flaskapi/__pycache__/
+
+selenium/__pycache__/
+
+selenium/selenium/
